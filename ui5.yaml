@@ -1,0 +1,32 @@
+specVersion: "3.1"
+metadata:
+  name: zhr_raa
+type: application
+server:
+  customMiddleware:
+    - name: fiori-tools-proxy
+      afterMiddleware: compression
+      configuration:
+        ignoreCertError: true
+        backend:
+          - path: /sap
+            url: https://vhtsvshdap01.hec.tengizchevroil.com:44300
+            client: "100"
+            destination: SHD
+        ui5:
+          path:
+            - /resources
+            - /test-resources
+          url: https://ui5.sap.com
+          version: 1.71.11
+    - name: fiori-tools-appreload
+      afterMiddleware: compression
+      configuration:
+        port: 35729
+        path: webapp
+        delay: 300
+    - name: fiori-tools-preview
+      afterMiddleware: fiori-tools-appreload
+      configuration:
+        component: ZHR_RaA
+        ui5Theme: sap_fiori_3

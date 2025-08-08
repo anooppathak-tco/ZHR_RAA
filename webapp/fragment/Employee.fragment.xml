@@ -1,0 +1,52 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog
+		class="sapUiContentPadding sapUiSizeCompact"
+		contentHeight="70%"
+		title="{i18n>employee}">
+		<Toolbar 
+			height="100%">
+			<VBox>
+				<SearchField 
+					custom:operator="EQ"
+					custom:key="Ename"
+					placeholder="{i18n>employee}"
+					search=".onEmployeeSearch"/>
+				<SearchField 
+					custom:operator="Contains"
+					custom:key="Pernr"
+					placeholder="{i18n>badgeNumber}"
+					search=".onEmployeeSearch"/>
+			</VBox>
+			<ToolbarSpacer/>
+		</Toolbar>
+		<Table
+			id="employeeTable"
+			noDataText="{i18n>noEmpFound}"
+			items="{}">
+			<columns>
+				<Column>
+					<Label text="{i18n>badgeNumber}"/>
+				</Column>
+				<Column>
+					<Label text="{i18n>employee}"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem
+					type="Active"
+					press=".handleEmployeeSelect">
+					<cells>
+						<Text text="{Pernr}"/>
+						<Text text="{Ename}"/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+		<endButton>
+			<Button text="{i18n>close}" press=".onEmployeeHelpClose"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,68 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	xmlns:l="sap.ui.layout">
+	<Dialog
+		id="awardTypeDialog"
+		class="sapUiContentPadding"
+		contentHeight="70%"
+		contentWidth="70%"
+		title="{i18n>type}">
+		<VBox items="{mModel>/AwardSet}">
+			<l:Grid defaultSpan="XL3 L3 M6 S12">
+				<VBox>
+					<RadioButton
+						select=".onAwardSelect"
+						text="{mModel>AwText}"/>
+				</VBox>
+				<VBox >
+					<RadioButtonGroup
+						buttons="{path: 'mModel>LevelSet/results', templateShareable: true}"
+						enabled="false">
+						<RadioButton 
+							select=".onAwardSelect"
+							text="{parts: ['mModel>/form/typeAward', 'mModel>LevText', 'mModel>MinValue', 'mModel>MaxValue'], formatter: '.awardTypeTextFormatter'}"/>
+			
+					</RadioButtonGroup>
+				
+				</VBox>
+				<VBox width="200%" >
+					<MessageStrip class="sapUiResponsiveMargin" visible="false"
+					type="Warning" text="{i18n>noCertificate}" showIcon="true">
+					</MessageStrip>
+				</VBox>
+				<VBox >
+					<Text 
+						text="{mModel>LevLongText}" 
+						class="fontBold"/>
+				</VBox>
+			</l:Grid>
+		</VBox>
+		<VBox class="sapUiSmallMarginTop">
+			<Label 
+				visible="{= ${mModel>/form/typeAward} === 'C'}"
+				labelFor="inpAmount" 
+				text="{i18n>awardAmount} (1 {i18n>mci} = {path: 'mModel>/MciSet/Betrg', formatter: '.formatterSpacesAndKZT'})"/>
+			<Label 
+				visible="{= ${mModel>/form/typeAward} === 'N'}"
+				labelFor="inpAmount" 
+				text="{i18n>awardAmountNC}"/>
+			<Input id="inpAmount" enabled="false" liveChange=".inpAmountLiveChange"/>
+			<Text id="inpAmountCurrency" class="sapUiTinyMarginTop" visible="{= ${mModel>/form/typeAward} === 'C'}"/>
+		</VBox>
+		<FormattedText
+								class="sapUiSmallMargin"
+								htmlText="{i18n>justificationInfo}"/>
+		<VBox class="sapUiSmallMarginTop">
+			<Label labelFor="inpIndividualReason" text="{i18n>individualReason}"/>
+			<TextArea id="inpIndividualReason" maxLength="1000" width="100%" rows="5"/>
+		</VBox>
+		<beginButton>
+			<Button id="idAwardTypeBtnSbmt" text="{i18n>submit}" press=".onAwardTypeHelpSubmit"/>
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>close}" press=".onAwardTypeHelpClose"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

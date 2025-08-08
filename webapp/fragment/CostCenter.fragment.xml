@@ -1,0 +1,52 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog
+		class="sapUiContentPadding sapUiSizeCompact"
+		contentHeight="70%"
+		title="{i18n>costCenter}">
+		<Toolbar 
+			height="100%">
+			<VBox>
+				<SearchField 
+					custom:operator="Contains"
+					custom:key="Id"
+					placeholder="{i18n>CostCenterID}"
+					search=".onCostCenterSearch"/>
+				<SearchField 
+					custom:operator="Contains"
+					custom:key="Name"
+					placeholder="{i18n>CosCenterText}"
+					search=".onCostCenterSearch"/>
+			</VBox>
+			<ToolbarSpacer/>
+		</Toolbar>
+		<Table
+			id="costCenterTable"
+			noDataText="{i18n>noCostCenterFound}"
+			items="{}">
+			<columns>
+				<Column>
+					<Label text="Id"/>
+				</Column>
+				<Column>
+					<Label text="Name"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem
+					type="Active"
+					press=".handleCostCenterSelect">
+					<cells>
+						<Text text="{Id}"/>
+						<Text text="{Name}"/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+		<endButton>
+			<Button text="{i18n>close}" press=".onCostCenterHelpClose"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

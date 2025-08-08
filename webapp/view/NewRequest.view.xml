@@ -1,0 +1,218 @@
+<mvc:View 
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	controllerName="ZHR_RaA.controller.NewRequest" 
+	xmlns:html="http://www.w3.org/1999/xhtml" 
+	xmlns:mvc="sap.ui.core.mvc"
+	displayBlock="true"
+	xmlns="sap.m"
+	xmlns:fc="sap.f"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core">
+	<App id="App">
+		<pages>
+			<Page 
+				class="sapUiContentPadding titleFont">
+		<customHeader>
+			<Toolbar>
+				<Title text="{i18n>title}"/>
+				<ToolbarSpacer/>
+				<Button type="Accept" text="{i18n>requests}" class="sapUiContentPadding" press="onRequestPress"/>
+			</Toolbar>
+		</customHeader>	
+		
+				<content>
+					<fc:Card width="100%" >
+						<fc:content>
+							<FormattedText
+								class="sapUiSmallMargin"
+								htmlText="{i18n>instructions}"/>
+						</fc:content>
+					</fc:Card>
+					<VBox>
+						<Panel
+							class="noBorder" 
+							content="{mModel>/form/inf}">
+							<headerToolbar>
+								<OverflowToolbar height="3rem" class="noBorderToolbar">
+									<Title
+										class="panelTitleColor"
+										text="{i18n>inf}"/>
+									<ToolbarSpacer />
+									<Button icon="sap-icon://add-contact" text="{i18n>addContact}" press=".handleAddInfo"/>
+								</OverflowToolbar>
+							</headerToolbar>
+							<l:Grid 
+								defaultSpan="XL3 L3 M6 S12">
+								<VBox>
+									<Label text="{i18n>recipientsName}"/>
+									<MultiInput
+										tooltip="{i18n>nameTooltip}"
+										value="{mModel>Ename}"
+										valueHelpOnly="true"
+										showValueHelp="true"
+										valueHelpRequest=".onPressEmployee"/>
+									<Label text="{i18n>costCenter}" visible="{= !!${mModel>Kostl}}"/>
+									<Text text="{mModel>Kostl} {mModel>KostlText}"/>
+								</VBox>
+								<VBox>
+									<Label text="{i18n>badgeNumber}"/>
+									<Input value="{mModel>Pernr}" editable="false"/>
+									<Label text="{i18n>lineSupervisor}" visible="{= !!${mModel>LsEname}}"/>
+									<Text text="{mModel>LsEname}"/>
+								</VBox>
+								<VBox>
+									<Label text="{i18n>type}"/>
+									<MultiInput
+										editable="{= (!!${mModel>Ename} || !!${mModel>Pernr})}"
+										tooltip="{i18n>amountTooltip}"
+										value="{parts: ['mModel>/form/typeAward','mModel>LevText', 'mModel>LvAmt'], formatter: '.amountTextFormatter'}"
+										valueHelpOnly="true"
+										showValueHelp="true"
+										valueHelpRequest=".onPressAwardType"/>
+									<Label text="{i18n>kztAmount}" visible="{= !!${mModel>kztAmount}}"/>
+									<Text text="{path: 'mModel>kztAmount', formatter: '.formatterSpacesAndKZT'}" 
+									visible="{= !!${mModel>kztAmount}}"/>
+								</VBox>
+								<VBox>
+									<Label text="{i18n>individualReason}"/>
+									<HBox renderType="Bare" >
+										<Input value="{mModel>InitComment}" editable="false" width="140%"/>
+										 
+										<Button class="sapUiTinyMarginBeginEnd" icon="sap-icon://delete" press=".handleDelInfo"/>
+										<Button class="sapUiTinyMarginBeginEnd" icon="sap-icon://work-history" 
+										tooltip="{i18n>lastRequest}" press=".onPressHistory" enabled="{= !!${mModel>Ename}}"/>
+									</HBox>
+								</VBox>
+							</l:Grid>
+						</Panel>
+						<VBox class="sapUiTinyMarginBottom">
+							<Label text="{i18n>total}"/>
+							<Text text="{path: 'mModel>/form/totalAmount', formatter: '.formatterSpacesAndKZT'}"/>
+						</VBox>
+					</VBox>
+					<fc:Card width="100%" >
+						<fc:content>
+							<FormattedText
+								class="sapUiSmallMargin"
+								htmlText="{i18n>noteInf}"/>
+						</fc:content>
+					</fc:Card>
+					<Panel
+						class="panelHdrColor noBorder"
+						headerText="{i18n>reason}">
+						<fc:Card width="100%" >
+							<fc:content>
+								<FormattedText
+									class="sapUiSmallMargin"
+									htmlText="{i18n>justificationInfo}"/>
+							</fc:content>
+						</fc:Card>
+					</Panel>
+					<Panel>
+						<l:Grid defaultSpan="XL5 L5 M6 S12">
+							<VBox>							
+								<Label labelFor="inpReason" text="{i18n>reasonShort}"/>								
+								<TextArea value="{mModel>/form/InitComment}" maxLength="1000" id="inpReason" width="100%" rows="5"/>
+							</VBox>
+						</l:Grid>
+					</Panel>
+					<Panel
+						class="panelHdrColor noBorder"
+						headerText="{i18n>contact}">
+						<l:Grid defaultSpan="XL3 L3 M6 S12">
+							<VBox>
+								<Label labelFor="inpInitiatorName" text="{i18n>initiatorName}"/>
+								<Input value="{mModel>/form/InitFio}" id="inpInitiatorName" editable="false"/>
+							</VBox>
+							<VBox>
+								<Label labelFor="inpEmail" text="{i18n>email}"/>
+								<Input value="{mModel>/form/InitMail}" id="inpEmail" type="Email" editable="false"/>
+							</VBox>
+						</l:Grid>
+					</Panel>
+					<Panel
+						visible="{= ${mModel>/form/typeAward} === 'C'}"
+						class="panelHdrColor noBorder"
+						headerText="{i18n>approvals}">
+						<l:Grid defaultSpan="XL3 L3 M6 S12">
+							<VBox>
+								<Label labelFor="selectGenManager" text="{i18n>Approver}"></Label>
+								<Select
+									width="100%"
+									id="selectGenManager"
+									forceSelection="false"
+									change=".handleApproverChange"
+									items="{mModel>/ApproverSet}">
+									<core:Item key="{mModel>GmPernr}" text="{mModel>GmFio}" />
+								</Select>
+								
+								
+								<Button
+									id="idSubstituteButton"
+									text="Показать заместителей"
+									icon="sap-icon://citizen-connect" 
+									press=".onSubstituteShow"
+									visible="false"/>
+									<Text id="approverTextId" class="sapUiTinyMarginBegin sapUiTinyMarginTop"/>
+						
+							</VBox>
+							
+							<VBox visible="{= ${mModel>/form/typeAward} === 'C'}">	
+								<Label labelFor="ccInput" text="{i18n>costCenter}"
+									visible="{visModel>/hasCostCenterData}"></Label>
+								<Input
+									id="ccInput"
+									placeholder="{i18n>costCenter}"
+									visible="{visModel>/hasCostCenterData}"	
+									tooltip="{i18n>costCenter}"
+									value="{mModel>/form/IdCostCenter}"
+									description="{mModel>/form/NameCostcenter}"
+									valueHelpOnly="true"
+									showValueHelp="true"
+									valueHelpRequest=".onPressCostCenter"/>
+							</VBox>
+							<VBox visible="{= ${mModel>/form/typeAward} === 'C'}">	
+								<Label labelFor="deptInput" text="{i18n>department}"
+									visible="{visModel>/hasDepartmentData}"></Label>
+								<Input
+									id="deptInput"
+									placeholder="{i18n>department}"
+									visible="{visModel>/hasDepartmentData}"										
+									tooltip="{i18n>department}"
+									value="{mModel>/form/IdDepartment}"
+									description="{mModel>/form/NameDepartment}"
+									valueHelpOnly="true"
+									showValueHelp="true"
+									valueHelpRequest=".onPressDepartment"/>
+							</VBox>
+							</l:Grid>
+					</Panel>
+					<Panel
+						visible="{= ${mModel>/form/typeAward} !== 'C'}"
+						class="panelHdrColor noBorder"
+						headerText="{i18n>approvals}">
+						<l:Grid defaultSpan="XL3 L3 M6 S12">
+							<Text text="{mModel>/InitLsSet/0/InitLsperFio}"/>
+							<Text text="{mModel>/InitLsSet/0/Stext}"/>
+						</l:Grid>
+					</Panel>
+					<fc:Card width="100%" >
+						<fc:content>
+							<FormattedText
+								class="sapUiSmallMargin"
+								htmlText="{i18n>noteApprovals}"/>
+						</fc:content>
+					</fc:Card>
+				</content>
+				<footer>
+					<Toolbar design="Transparent">
+						<ToolbarSpacer/>         
+						<Button type="Accept" width="10rem" text="{i18n>submit}" press=".onSubmit"/>
+						<Button type="Reject" width="10rem" text="{i18n>discard}" press=".onDiscard"/>
+					</Toolbar>
+				</footer>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>

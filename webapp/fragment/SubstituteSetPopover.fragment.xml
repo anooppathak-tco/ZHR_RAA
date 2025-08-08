@@ -1,0 +1,57 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+	<Popover
+		class="sapUiContentPadding">
+		<content>
+			<f:Form
+				id="idSubstituteForm"
+				editable="true"
+				formContainers="{mModel>/empty}">
+				<f:toolbar>
+					<OverflowToolbar>
+						<Title text="{i18n>substituents}"/>
+					</OverflowToolbar>
+				</f:toolbar>
+				<f:layout>
+					<f:ResponsiveGridLayout
+						labelSpanXL="3"
+						labelSpanL="2"
+						labelSpanM="3"
+						labelSpanS="12"
+						adjustLabelSpan="false"
+						emptySpanXL="0"
+						emptySpanL="6"
+						emptySpanM="0"
+						emptySpanS="0"
+						columnsXL="2"
+						columnsL="1"
+						columnsM="1"
+						singleContainerFullSize="false" />
+				</f:layout>
+				<f:formContainers>
+					<f:FormContainer>
+						<f:formElements>
+							<f:FormElement label="{i18n>fullName}">
+                                <f:fields>
+                                	<Text text="{mModel>SubFio}"/>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement label="{i18n>department}">
+                                <f:fields>
+                                	<Text text="{mModel>Stext}"/>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement label="{i18n>tcoID}">
+                                <f:fields>
+                                	<Text text="{mModel>SubPernr}"/>
+                                </f:fields>
+                            </f:FormElement>
+						</f:formElements>
+					</f:FormContainer>
+				</f:formContainers>
+			</f:Form>
+		</content>
+	</Popover>
+</core:FragmentDefinition>

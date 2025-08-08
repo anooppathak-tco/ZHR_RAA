@@ -1,0 +1,41 @@
+.color-text {
+	color: red!important;
+}
+
+.panelHdrColor .sapMPanelHdr  {
+	color: blue!important;
+	border: none !important;
+}
+
+.noBorderToolbar  {
+	border-bottom: 0px!important;
+}
+
+.noBorder .sapMPanelContent {
+	border: none !important;
+}
+
+.panelTitleColor {
+	color: blue!important;
+}
+
+.fontBold {
+	font-weight: bold!important;
+}
+
+.titleFont .sapMIBar>.sapMBarLeft>.sapMBarChild:last-child, .sapMIBar .sapMBarPH>.sapMBarChild:last-child span {
+	font-weight: bold!important;
+	font-size: x-large!important;
+}
+
+.titleColor {
+	color: blue!important;
+}
+
+.rejectRadio[aria-checked='true'] .sapMLabel.sapUiSelectable.sapMLabelMaxWidth.sapMRbBLabel {
+	color: red!important;
+}
+
+.approveRadio[aria-checked='true'] .sapMLabel.sapUiSelectable.sapMLabelMaxWidth.sapMRbBLabel {
+	color: green!important;
+}

@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "3.1"
+metadata:
+  name: zhr_raa
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        ignoreCertError: true
+        target:
+          url: https://vhtsvshdap01.hec.tengizchevroil.com:44300
+        app:
+          name: ZHR_RAA
+          package: ZHR_ESS023
+          transport: SHDK922589
+        exclude:
+          - /test/

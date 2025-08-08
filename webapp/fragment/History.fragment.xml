@@ -1,0 +1,63 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog
+		id="historyDialog"
+		class="sapUiContentPadding sapUiSizeCompact"
+		contentHeight="100%"
+		contentWidth="100%"
+		resizable="true"
+		draggable="true"
+		title="{i18n>lastRequest}">
+		<Table
+			id="historyTable"
+			noDataText="{i18n>noEmpFound}"
+			items="{}">
+			<columns>
+				<Column width="10%">
+					<Label text="{i18n>creationDate}" tooltip="{i18n>creationDate}"/>
+				</Column>
+				<Column width="10%">
+					<Label text="{i18n>initiator}"/>
+				</Column>
+				<Column width="10%">
+					<Label text="{i18n>typeAward}"/>
+				</Column>
+				<Column width="40%">
+					<Label text="{i18n>individualReason}"/>
+				</Column>
+				<Column width="10%">
+					<Label text="{i18n>status}"/>
+				</Column>
+				<Column width="10%">
+					<Label text="{i18n>approver1st}"/>
+				</Column>
+				<Column width="10%">
+					<Label text="{i18n>approver2nd}"/>
+				</Column>
+				<Column width="10%">
+					<Label text="{i18n>approver3rd}"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem
+					type="Active">
+					<cells>
+						<Text text="{parts: ['InitDate'], formatter: '.formatterPayDate'}"/>
+						<Text text="{InitName}"/>
+						<Text text="{AwText}"/>
+						<Text text="{InitComment}"/>
+						<Text text="{RnaStatusText}"/>
+						<Text text="{Approver1st}"/>
+						<Text text="{Approver2nd}"/>
+						<Text text="{Approver3rd}"/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+		<endButton>
+			<Button text="{i18n>close}" press=".onEmployeeHelpClose"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

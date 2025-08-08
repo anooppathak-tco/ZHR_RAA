@@ -1,0 +1,52 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog
+		class="sapUiContentPadding sapUiSizeCompact"
+		contentHeight="70%"
+		title="{i18n>department}">
+		<Toolbar 
+			height="100%">
+			<VBox>
+				<SearchField 
+					custom:operator="Contains"
+					custom:key="Id"
+					placeholder="{i18n>DepartmentId}"
+					search=".onDepartmentSearch"/>
+				<SearchField 
+					custom:operator="Contains"
+					custom:key="Name"
+					placeholder="{i18n>DepartmentName}"
+					search=".onDepartmentSearch"/>
+			</VBox>
+			<ToolbarSpacer/>
+		</Toolbar>
+		<Table
+			id="departmentTable"
+			noDataText="{i18n>noDepartmentFound}"
+			items="{}">
+			<columns>
+				<Column>
+					<Label text="Id"/>
+				</Column>
+				<Column>
+					<Label text="Name"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem
+					type="Active"
+					press=".handleDepartmentSelect">
+					<cells>
+						<Text text="{Id}"/>
+						<Text text="{Name}"/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+		<endButton>
+			<Button text="{i18n>close}" press=".onDepartmentHelpClose"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

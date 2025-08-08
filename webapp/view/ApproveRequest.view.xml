@@ -1,0 +1,177 @@
+<mvc:View 
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	controllerName="ZHR_RaA.controller.ApproveRequest" 
+	xmlns:html="http://www.w3.org/1999/xhtml" 
+	xmlns:mvc="sap.ui.core.mvc"
+	displayBlock="true"
+	xmlns="sap.m"
+	xmlns:fc="sap.f"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:l="sap.ui.layout">
+	<App>
+		<pages>
+			<Page 
+				title="{i18n>title}"
+				class="sapUiContentPadding">
+				<content>
+					<fc:Card width="100%" class="sapUiSmallMarginBottom" >
+						<fc:content>
+							<FormattedText
+								class="sapUiSmallMargin"
+								htmlText="{i18n>noteApprove}"/>
+						</fc:content>
+					</fc:Card>
+					<HBox visible="{path: 'mMdl>/RnaEmployeesSet', formatter: '.approveRejectAllVisibleFormatter'}">
+						<Button	class="sapUiSmallMarginBegin sapUiTinyMarginEnd" type="Accept" text="{i18n>approveAll}" press=".handleSelectAll" custom:decision="01"/>
+						<Button type="Reject" text="{i18n>rejectAll}" press=".handleSelectAll" custom:decision="02"/>
+					</HBox>
+					<Panel
+						class="noBorder sapUiNoMarginBottom"
+						content="{mMdl>/RnaEmployeesSet}">
+						<headerToolbar>
+							<OverflowToolbar class="noBorderToolbar">
+								<Title text="{i18n>inf} ({mMdl>/RnaEmployeesSet/length})" class="titleColor"/>
+								<ToolbarSpacer/>
+							</OverflowToolbar>
+						</headerToolbar>
+						<fc:Card width="100%" class="sapUiTinyMarginBottom">
+							<fc:content>
+								<VBox>
+									<RadioButtonGroup columns="5" class="sapUiTinyMarginBeginEnd">
+										<RadioButton 
+											custom:decision="01" 
+											selected="{= ${mMdl>Action} === '01'}"
+											text="{i18n>approved}" 
+											class="approveRadio" 
+											select="onRadioButtonSelect"/>
+										<RadioButton 
+											custom:decision="02"
+											selected="{= ${mMdl>Action} === '02'}"
+											text="{i18n>rejected}" 
+											class="rejectRadio"
+											select="onRadioButtonSelect"/>
+									</RadioButtonGroup>
+									<l:Grid defaultSpan="L3 M4 S12" class="sapUiTinyMarginTop">
+										<VBox>
+											<layoutData>
+												<l:GridData span="L3"/>
+											</layoutData>
+											<Label labelFor="inpName" text="{i18n>recipientsName}"/>
+											<Text text="{mMdl>Ename}" class="fontBold"/>
+											<!-- <Label labelFor="inpCost" text="{i18n>cost}" class="sapUiTinyMarginTop"/>
+											<Text text="{mMdl>Kostl} {mMdl>KostlText}" class="fontBold"/> -->
+										</VBox>
+										<VBox>
+											<layoutData>
+												<l:GridData span="L2"/>
+											</layoutData>
+											<Label labelFor="inpBadge" text="{i18n>badgeNumber}"/>
+											<Text text="{mMdl>Pernr}" class="fontBold"/>
+											<Label labelFor="inpSupervisor" text="{i18n>lineSupervisor}" class="sapUiTinyMarginTop"/>
+											<Text text="{mMdl>LsEname}" class="fontBold"/>
+										</VBox>
+										<VBox>
+											<layoutData>
+												<l:GridData span="L2"/>
+											</layoutData>
+											<Label labelFor="displayAmount" text="{i18n>type}"/>
+											<Text text="{mMdl>AwText}" id="displayAmount" class="fontBold"/>
+											<Text text="{parts: ['mMdl>AwType', 'mMdl>LvAmt', 'mMdl>LevText', 'mMdl>/MciSet/Betrg'], formatter: '.awardTypeTextFormatter'}" class="fontBold"/>
+										</VBox>									
+										<VBox>
+											<layoutData>
+												<l:GridData span="L3"/>
+											</layoutData>
+											<Label labelFor="displayReason" text="{i18n>reason}"/>
+											<Text text="{mMdl>InitComment}" id="displayReason" class="fontBold"/>
+											<Label labelFor="rejectReason" text="{i18n>reasonForReject}" visible="{= !!${mMdl>BossComment}}" class="sapUiTinyMarginTop"/>
+											<Text text="{mMdl>BossComment}" id="rejectReason" class="fontBold"/>
+											<Label labelFor="inpCost" text="{i18n>cost}" class="sapUiTinyMarginTop"/>
+											<Text text="{mMdl>Kostl} {mMdl>KostlText}" class="fontBold"/>
+											</VBox>
+									<VBox>
+										<layoutData>
+												<l:GridData span="L2"/>
+											</layoutData>
+											<Label text="{i18n>lastRequest}"/>
+											<Button class="sapUiTinyMarginBeginEnd" icon="sap-icon://work-history" 
+											tooltip="{i18n>lastRequest}" press=".onPressHistory" enabled="{= !!${mMdl>Ename}}"/>
+										</VBox>
+									</l:Grid>	
+								</VBox>
+							</fc:content>
+						</fc:Card>
+					</Panel>
+					<Text id="test" class="fontBold sapUiSmallMarginBegin sapUiNoMarginTop"/>
+					
+					<Panel visible="{mMdl>/ShowBudget}" class="sapUiSmallMarginTop noBorder sapUiNoMarginBottom">					
+						<headerToolbar>
+							<OverflowToolbar>
+								<Title text="{i18n>annualBudget}" class="noBorderToolbar titleColor"/>
+								<ToolbarSpacer/>
+							</OverflowToolbar>
+						</headerToolbar>
+						<HBox justifyContent="SpaceBetween" class="sapUiSmallMargin">
+							<VBox alignItems="Center" class="sapUiTinyMargin">
+								<Label text="{i18n>annualBudget}"></Label>
+								<ObjectNumber
+								class="sapUiSmallMarginBottom"
+								binding="{mMdl>/oldData}"
+								number="{
+										parts:[{path:'mMdl>AnnualBudget'},{path:'mMdl>BudgetCurrency'}],
+										type: 'sap.ui.model.type.Currency',
+										formatOptions: {showMeasure: false}
+									}"
+								unit="{mMdl>BudgetCurrency}" />
+							</VBox>
+							<VBox alignItems="Center" class="sapUiTinyMargin">
+								<Label text="{i18n>spentBudget}"></Label>
+								<ObjectNumber
+								class="sapUiSmallMarginBottom"
+								binding="{mMdl>/oldData}"
+								number="{
+										parts:[{path:'mMdl>SpentBudget'},{path:'mMdl>BudgetCurrency'}],
+										type: 'sap.ui.model.type.Currency',
+										formatOptions: {showMeasure: false}
+									}"
+								unit="{mMdl>BudgetCurrency}" />
+							</VBox>
+							<VBox alignItems="Center" class="sapUiTinyMargin">
+								<Label text="{i18n>remainingBudget}"></Label>
+								<ObjectNumber
+								class="sapUiSmallMarginBottom"
+								binding="{mMdl>/oldData}"
+								number="{
+										parts:[{path:'mMdl>RemainBudget'},{path:'mMdl>BudgetCurrency'}],
+										type: 'sap.ui.model.type.Currency',
+										formatOptions: {showMeasure: false}
+									}"
+								unit="{mMdl>BudgetCurrency}" />
+							</VBox>
+						</HBox>
+					</Panel>
+					<Panel
+						class="panelHdrColor noBorder"
+						headerText="{i18n>contact}">
+						<l:Grid defaultSpan="XL3 L3 M6 S12">
+							<VBox>
+								<Label labelFor="inpInitiatorName" text="{i18n>initiatorName}"/>
+								<Text text="{mMdl>/InitFio}" class="fontBold"/>
+							</VBox>
+							<VBox>
+								<Label labelFor="inpEmail" text="{i18n>email}"/>
+								<Text text="{mMdl>/InitMail}" class="fontBold"/>
+							</VBox>
+						</l:Grid>
+					</Panel>
+				</content>
+				<footer>
+					<Toolbar>
+						<ToolbarSpacer/>         
+						<Button width="10rem" text="{i18n>submit}" press=".onSubmit"/>
+					</Toolbar>
+				</footer>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>

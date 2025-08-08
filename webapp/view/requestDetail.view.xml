@@ -1,0 +1,159 @@
+<mvc:View controllerName="ZHR_RaA.controller.requestDetail" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.f.semantic" xmlns="sap.m"
+	xmlns:fc="sap.f" xmlns:f="sap.ui.layout.form" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core">
+	<semantic:SemanticPage showFooter="true" id="detailPage" >
+		<semantic:titleHeading>
+			<Title text="{i18n>inf} ({mMdl>/RnaEmployeesSet/length})" class="titleColor" level="H2"/>
+		</semantic:titleHeading>
+		<semantic:headerContent></semantic:headerContent>
+		<semantic:content>
+			<IconTabBar id="idIconTabBarMulti" expanded="{device>/isNoPhone}" class="sapUiResponsiveContentPadding">
+				<items>
+					<IconTabFilter icon="sap-icon://detail-view" key="details" text="{i18n>details}">
+						<content>
+							<Panel class="noBorder sapUiNoMarginBottom" content="{mMdl>/RnaEmployeesSet}">
+								<headerToolbar>
+									<OverflowToolbar class="noBorderToolbar">
+										<Title text="{i18n>inf} ({mMdl>/RnaEmployeesSet/length})" class="titleColor"/>
+										<ToolbarSpacer/>
+									</OverflowToolbar>
+								</headerToolbar>
+								<fc:Card width="100%" class="sapUiTinyMarginBottom">
+									<fc:content>
+										<VBox>
+											<l:Grid defaultSpan="XL3 L3 M6 S12" class="sapUiTinyMarginTop">
+												<VBox>
+													<Label labelFor="inpName" text="{i18n>recipientsName}"/>
+													<Text text="{mMdl>Ename}" class="fontBold"/>
+													<Label labelFor="inpCost" text="{i18n>cost}" class="sapUiTinyMarginTop"/>
+													<Text text="{mMdl>Kostl} {mMdl>KostlText}" class="fontBold"/>
+												</VBox>
+												<VBox>
+													<Label labelFor="inpBadge" text="{i18n>badgeNumber}"/>
+													<Text text="{mMdl>Pernr}" class="fontBold"/>
+													<Label labelFor="inpSupervisor" text="{i18n>lineSupervisor}" class="sapUiTinyMarginTop"/>
+													<Text text="{mMdl>LsEname}" class="fontBold"/>
+												</VBox>
+												<VBox>
+													<Label labelFor="displayAmount" text="{i18n>type}"/>
+													<Text text="{mMdl>AwText}" id="displayAmount" class="fontBold"/>
+													<Text text="{parts: ['mMdl>AwType', 'mMdl>LvAmt', 'mMdl>LevText'], formatter: '.awardTypeTextFormatter'}" class="fontBold"/>
+												</VBox>
+												<VBox>
+													<Label labelFor="displayReason" text="{i18n>reason}"/>
+													<Text text="{mMdl>InitComment}" id="displayReason" class="fontBold"/>
+													<Label labelFor="rejectReason" text="{i18n>reasonForReject}" visible="{= !!${mMdl>BossComment}}" class="sapUiTinyMarginTop"/>
+													<Text text="{mMdl>BossComment}" id="rejectReason" class="fontBold"/>
+												</VBox>
+											</l:Grid>
+										</VBox>
+									</fc:content>
+								</fc:Card>
+							</Panel>
+							<Text id="test" class="fontBold sapUiSmallMarginBegin sapUiNoMarginTop"/>
+						</content>
+					</IconTabFilter>
+					<IconTabFilter
+						text="{i18n>inProgress}"
+						count="{mMdl>/reqActors/length}"
+						icon="sap-icon://group"
+						key="handlers">
+						<Table
+							items="{path: 'mMdl>/reqActors'}">
+							<columns>
+								<Column>
+									<Text text="{i18n>pernr}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>stepId}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>stepType}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>createDate}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>createTime}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>executor}"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<Text text="{mMdl>Pernr}"/>
+										<Text text="{mMdl>WiId}"/>
+										<Text text="{mMdl>WiText}"/>
+										<Text text="{ path: 'mMdl>WiCd', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd:MM:yyyy', UTC: true } }"/>
+										<Text text="{ path: 'mMdl>WiCt', type: 'sap.ui.model.odata.type.Time' }"/>
+				   						<Text text="{mMdl>FioUser}"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+						
+					</IconTabFilter>
+					<IconTabFilter text="{i18n>history}" icon="sap-icon://work-history" key="history">
+						<Table items="{mMdl>/reqHistory}">
+							<columns>
+								<Column>
+									<Text text="{i18n>pernr}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>stepId}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>stepType}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>status}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>createDate}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>createTime}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>completedDate}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>completedTime}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>complete}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>solution}"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<Text text="{mMdl>Pernr}"/>
+										<Text text="{mMdl>WiId}"/>
+										<Text text="{mMdl>WiText}"/>
+										<Text text="{mMdl>Statustext}"/>
+										<Text text="{ path: 'mMdl>WiCd', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd:MM:yyyy', UTC: true } }"/>
+				   						<Text text="{ path: 'mMdl>WiCt', type: 'sap.ui.model.odata.type.Time' }"/>
+				   						<Text text="{ path: 'mMdl>WiAed', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd:MM:yyyy', UTC: true } }"/>
+				   						<Text text="{ path: 'mMdl>WiAet', type: 'sap.ui.model.odata.type.Time' }"/>
+				   						<Text text="{mMdl>FioAagent}"/>
+				   						<Text text="{mMdl>DecText}"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>						
+					</IconTabFilter>
+				</items>
+			</IconTabBar>
+		</semantic:content>
+		<semantic:closeAction>
+			<semantic:CloseAction id="closeColumn" press=".onCloseDetailPress"/>
+		</semantic:closeAction>
+		<semantic:footerCustomActions>
+			<Button text="{i18n>back}" press=".onCloseDetailPress"/>
+		</semantic:footerCustomActions>
+	</semantic:SemanticPage>
+</mvc:View>

@@ -1,0 +1,58 @@
+<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:core="sap.ui.core" height="100%" controllerName="ZHR_RaA.controller.RequestList">
+	
+			<Page title="{i18n>requestList}" showHeader="true" enableScrolling="true" class="sapUiContentPadding" showNavButton="false">
+		<Table id="exportTable" inset="false" items="{/RequestListSet}" growing="true" alternateRowColors="true" growingThreshold="1000">
+				<headerToolbar>
+								<OverflowToolbar>
+									<content>
+										<ToolbarSpacer/>
+										<ComboBox change=".onSearch" id="oComboBox" placeholder="{i18n>searchByName}" items="{ path: 'enamMdl>/Employees',            sorter: { path: 'Names' }}">
+											<core:Item key="{enamMdl>Names}" text="{enamMdl>Names}"/>
+										</ComboBox>
+										<ComboBox change=".onSearch" id="searchAward" placeholder="{i18n>searchByAward}" items="{ path: 'enamMdl>/Awards',            sorter: { path: 'Awtext' }}">
+											<core:Item key="{enamMdl>Awtext}" text="{enamMdl>Awtext}"/>
+										</ComboBox>
+										<ComboBox change=".onSearch" id="searchStatus" placeholder="{i18n>searchByStatus}" items="{ path: 'enamMdl>/Statuses',            sorter: { path: 'Status' }}">
+											<core:Item key="{enamMdl>Status}" text="{enamMdl>Status}"/>
+										</ComboBox>	
+										<DateRangeSelection id="DRS1" width="20%" value="{             'type': 'sap.ui.model.type.DateInterval',             'formatOptions': {              'pattern': 'yyyy/MM/dd'             },             'parts': [              {               'type': 'sap.ui.model.type.Date',               'path':  'oDateModel>/start'              },              {               'type': 'sap.ui.model.type.Date',               'path':  'oDateModel>/end'              }             ]            }" change=".onSearch"/>
+										<SearchField id="searchStatu1s" visible="false" width="20%" placeholder="{i18n>searchByStatus}" search=".onSearch"/>
+										<SearchField id="searchAward1" visible="false" width="20%" placeholder="{i18n>searchByAward}" search=".onSearch"/>
+									</content>
+								</OverflowToolbar>
+							</headerToolbar>
+			<columns>
+				<Column>
+					<Text text="{i18n>pernr}"/>
+				</Column>
+				<Column>
+					<Text text="{i18n>employee}"/>
+				</Column>
+				<Column>
+					<Text text="{i18n>typeAward}"/>
+				</Column>
+				<Column>
+					<Text text="{i18n>creationDate}"/>
+				</Column>
+				<Column>
+					<Text text="{i18n>individualReason}"/>
+				</Column>
+				<Column>
+					<Text text="{i18n>status}"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem type="Navigation" press="showRequest">
+					<cells>
+						<ObjectIdentifier title="{Pernr}"/>
+						<Text text="{Ename}"/>
+						<Text text="{Awtext}"/>
+						<Text text="{path:'Erdat', type: 'sap.ui.model.type.Date'}"/>
+						<Text text="{Itemcomment}"/>
+						<Text text="{Status}"/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+	</Page>
+</mvc:View>

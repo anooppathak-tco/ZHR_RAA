@@ -1,0 +1,103 @@
+{
+    "resources": [
+        {
+            "name": ".user.project.json"
+        },
+        {
+            "name": "css/style.css"
+        },
+        {
+            "name": "view/ApproveRequest.view.xml"
+        },
+        {
+            "name": "view/RequestList.view.xml"
+        },
+        {
+            "name": "view/NewRequest.view.xml"
+        },
+        {
+            "name": "view/App.view.xml"
+        },
+        {
+            "name": "view/requestDetail.view.xml"
+        },
+        {
+            "name": "fragment/AwardType.fragment.xml"
+        },
+        {
+            "name": "fragment/Popup.fragment.xml"
+        },
+        {
+            "name": "fragment/History.fragment.xml"
+        },
+        {
+            "name": "fragment/Employee.fragment.xml"
+        },
+        {
+            "name": "fragment/SubstituteSetPopover.fragment.xml"
+        },
+        {
+            "name": "Component.js"
+        },
+        {
+            "name": "manifest.json"
+        },
+        {
+            "name": "index.html"
+        },
+        {
+            "name": "resources.json",
+            "merged": true
+        },
+        {
+            "name": "model/models.js"
+        },
+        {
+            "name": "model/formatter.js"
+        },
+        {
+            "name": "neo-app.json"
+        },
+        {
+            "name": ".project.json"
+        },
+        {
+            "name": "i18n/i18n_en.properties",
+            "raw": "i18n/i18n.properties"
+        },
+        {
+            "name": "i18n/i18n_kk.properties",
+            "raw": "i18n/i18n.properties"
+        },
+        {
+            "name": "i18n/i18n.properties",
+            "raw": "i18n/i18n.properties"
+        },
+        {
+            "name": "i18n/i18n_ru.properties",
+            "raw": "i18n/i18n.properties"
+        },
+        {
+            "name": "controller/App.controller.js"
+        },
+        {
+            "name": "controller/NewRequest.controller.js"
+        },
+        {
+            "name": "controller/ApproveRequest.controller.js"
+        },
+        {
+            "name": "controller/RequestList.controller.js"
+        },
+        {
+            "name": "controller/BaseController.js"
+        },
+        {
+            "name": "controller/requestDetail.controller.js"
+        },
+        {
+            "name": "Component-preload.js",
+            "merged": true
+        }
+    ]
+}

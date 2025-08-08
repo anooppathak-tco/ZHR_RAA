@@ -1,0 +1,9 @@
+<core:View
+ controllerName="ZHR_RaA.controller.App"
+ displayBlock="true"
+ xmlns="sap.m"
+ xmlns:core="sap.ui.core"
+ xmlns:mvc="sap.ui.core.mvc" >
+    <App id="App" height="100%">
+    </App>
+</core:View>

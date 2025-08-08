@@ -1,0 +1,16 @@
+<Dialog
+	title="{i18n>typeAward}"
+	xmlns="sap.m"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:core="sap.ui.core"
+	class="sapUiSizeCompact sapUiContentPadding">
+	<Select
+		id="awardTypeId"
+		width="100%"
+		items="{mModel>/AwgroupSet}">
+		<core:Item key="{mModel>Awgrp}" text="{mModel>Text}"/>
+	</Select>
+	<buttons>
+        <Button id="acceptBtn" text="{i18n>submit}"></Button>
+    </buttons>
+</Dialog>

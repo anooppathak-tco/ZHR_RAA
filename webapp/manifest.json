@@ -1,0 +1,163 @@
+{
+    "_version": "1.7.0",
+    "sap.app": {
+        "id": "ZHR_RaA",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "dataSources": {
+            "mainService": {
+                "uri": "/sap/opu/odata/sap/ZESS023_RNA_SRV/",
+                "type": "OData",
+                "settings": {
+                    "odataVersion": "2.0",
+                    "localUri": "localService/metadata.xml"
+                }
+            },
+            "common": {
+                "uri": "/sap/opu/odata/sap/HCMFAB_COMMON_SRV/",
+                "type": "OData",
+                "settings": {
+                    "odataVersion": "2.0",
+                    "localUri": "localService/metadata.xml"
+                }
+            }
+        },
+        "sourceTemplate": {
+            "id": "@sap/ux-app-migrator:freestyle",
+            "version": "1.17.0",
+            "toolsId": "a6017964-7ac5-4280-a5cd-29db53cf92bc"
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        },
+        "supportedThemes": [
+            "sap_hcb",
+            "sap_belize"
+        ]
+    },
+    "sap.ui5": {
+        "rootView": {
+            "viewName": "ZHR_RaA.view.App",
+            "type": "XML"
+        },
+        "dependencies": {
+            "minUI5Version": "1.30.0",
+            "libs": {
+                "sap.ui.core": {},
+                "sap.m": {},
+                "sap.ui.layout": {},
+                "sap.ushell": {},
+                "sap.collaboration": {},
+                "sap.ui.comp": {},
+                "sap.uxap": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "ZHR_RaA.i18n.i18n"
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "preload": true,
+                "settings": {
+                    "defaultCountMode": "Inline"
+                }
+            },
+            "mCommon": {
+                "dataSource": "common",
+                "preload": true
+            }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "ZHR_RaA.view",
+                "transition": "slide",
+                "async": true,
+                "controlId": "App",
+                "controlAggregation": "pages"
+            },
+            "routes": [
+                {
+                    "pattern": "NewRequest",
+                    "name": "new",
+                    "target": "new"
+                },
+                {
+                    "pattern": "",
+                    "name": "newreq",
+                    "target": "newreq"
+                },
+                {
+                    "pattern": "approve/{id}",
+                    "name": "approve",
+                    "target": "approve"
+                },
+                {
+                    "pattern": "requestDetail/{id}",
+                    "name": "reqDetail",
+                    "target": "reqDetail"
+                }
+            ],
+            "targets": {
+                "newreq": {
+                    "viewName": "NewRequest",
+                    "viewLevel": 1,
+                    "viewId": "newreq"
+                },
+                "new": {
+                    "viewName": "RequestList",
+                    "viewLevel": 1,
+                    "viewId": "new"
+                },
+                "reqDetail": {
+                    "viewName": "requestDetail",
+                    "viewLevel": 2,
+                    "viewId": "reqDetail"
+                },
+                "approve": {
+                    "viewName": "ApproveRequest",
+                    "viewId": "approve",
+                    "viewLevel": 1
+                }
+            }
+        }
+    },
+    "sap.platform.abap": {
+        "uri": "/sap/bc/ui5_ui5/sap/zhr_raa",
+        "_version": "1.1.0"
+    }
+}
