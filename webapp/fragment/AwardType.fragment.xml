@@ -2,7 +2,8 @@
 	xmlns="sap.m"
 	xmlns:core="sap.ui.core"
 	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
-	xmlns:l="sap.ui.layout">
+	xmlns:l="sap.ui.layout"
+	xmlns:upload="sap.m.upload">
 	<Dialog
 		id="awardTypeDialog"
 		class="sapUiContentPadding"
@@ -23,7 +24,6 @@
 						<RadioButton 
 							select=".onAwardSelect"
 							text="{parts: ['mModel>/form/typeAward', 'mModel>LevText', 'mModel>MinValue', 'mModel>MaxValue'], formatter: '.awardTypeTextFormatter'}"/>
-			
 					</RadioButtonGroup>
 				
 				</VBox>
@@ -52,11 +52,46 @@
 			<Text id="inpAmountCurrency" class="sapUiTinyMarginTop" visible="{= ${mModel>/form/typeAward} === 'C'}"/>
 		</VBox>
 		<FormattedText
-								class="sapUiSmallMargin"
-								htmlText="{i18n>justificationInfo}"/>
-		<VBox class="sapUiSmallMarginTop">
+			id="idFormattedText"
+			class="sapUiSmallMargin"
+			htmlText="{i18n>justificationInfo}"
+			visible="false"
+			/>
+		<VBox id="indResaon" class="sapUiSmallMarginTop"
+			visible="false">
 			<Label labelFor="inpIndividualReason" text="{i18n>individualReason}"/>
 			<TextArea id="inpIndividualReason" maxLength="1000" width="100%" rows="5"/>
+		</VBox>
+		<!-- Date Input -->
+        <VBox id="awardDateInp" class="sapUiSmallMarginTop"
+			visible="false">
+            <Label text="{i18n>AwardDate}" labelFor="dateInput"/>
+            <DatePicker id="dateInput" width="100%" valueFormat="yyyy-MM-dd" displayFormat="long"
+			minDate="{dateModelAward>/minDate}"
+			maxDate="{dateModelAward>/maxDate}"/>
+        </VBox>
+		<VBox id="uploadsetBox" class="sapUiSmallMarginTop" visible="false">	
+		
+		<upload:UploadSet
+			id="UploadSet"
+			instantUpload="false" 
+			items="{path: 'fileModel>/files', templateShareable: false}"
+			maxFileSize="10" 
+			uploadUrl="/sap/opu/odata/sap/ZESS023_RNA_SRV/AttachmentSet"
+			afterItemAdded="onItemAdded"
+			beforeUploadStarts="onBeforeUploadStarts"
+			uploadCompleted="onUploadComplete"
+			terminationEnabled="true"
+			beforeItemEdited="onFileChange"
+			beforeItemRemoved="onItemRemoved">				
+			<upload:items>
+				<upload:UploadSetItem
+						fileName="{fileModel>fileName}"
+						mediaType="{fileModel>mediaType}"
+						url="{fileModel>url}">
+				</upload:UploadSetItem>
+			</upload:items>
+		</upload:UploadSet>
 		</VBox>
 		<beginButton>
 			<Button id="idAwardTypeBtnSbmt" text="{i18n>submit}" press=".onAwardTypeHelpSubmit"/>

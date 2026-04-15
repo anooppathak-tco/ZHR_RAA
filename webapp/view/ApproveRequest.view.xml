@@ -84,20 +84,43 @@
 											</layoutData>
 											<Label labelFor="displayReason" text="{i18n>reason}"/>
 											<Text text="{mMdl>InitComment}" id="displayReason" class="fontBold"/>
+											<Label labelFor="idAwardDate" text="{i18n>AwardDate}" visible="{mMdl>ShowAttach}" class="sapUiTinyMarginTop" />
+    										<Text id="idAwardDate" class="fontBold" text="{path: 'mMdl>AwardDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'short' }}" visible="{mMdl>ShowAttach}" />
 											<Label labelFor="rejectReason" text="{i18n>reasonForReject}" visible="{= !!${mMdl>BossComment}}" class="sapUiTinyMarginTop"/>
 											<Text text="{mMdl>BossComment}" id="rejectReason" class="fontBold"/>
 											<Label labelFor="inpCost" text="{i18n>cost}" class="sapUiTinyMarginTop"/>
 											<Text text="{mMdl>Kostl} {mMdl>KostlText}" class="fontBold"/>
 											</VBox>
-									<VBox>
-										<layoutData>
+										<VBox>
+											<layoutData>
 												<l:GridData span="L2"/>
 											</layoutData>
 											<Label text="{i18n>lastRequest}"/>
 											<Button class="sapUiTinyMarginBeginEnd" icon="sap-icon://work-history" 
 											tooltip="{i18n>lastRequest}" press=".onPressHistory" enabled="{= !!${mMdl>Ename}}"/>
 										</VBox>
-									</l:Grid>	
+										<VBox visible="{mMdl>ShowAttach}">
+											<layoutData>
+												<l:GridData span="L6"/>
+											</layoutData>
+										<Label text="{i18n>attachmentList}" labelFor="attachmentItems" class="fontBold"/>
+										
+										<List id="attachmentItems"
+											items="{path: 'mMdl>Attachments/results', 
+											sorter: {path: 'FileName', descending: false}}"
+											showSeparators="None">
+
+											<items>
+												<CustomListItem>
+													<HBox class="sapUiTinyMarginBeginEnd sapUiSmallMarginTopBottom" justifyContent="SpaceBetween" alignItems="Center">
+														<Link text="{mMdl>FileName}"
+															press="handleFilePress"
+															emphasized="true"/>
+													</HBox>
+												</CustomListItem>
+											</items>
+										</List></VBox>
+									</l:Grid>
 								</VBox>
 							</fc:content>
 						</fc:Card>

@@ -19,6 +19,6 @@ builder:
         app:
           name: ZHR_RAA
           package: ZHR_ESS023
-          transport: SHDK922589
+          transport: SHDK922654
         exclude:
           - /test/

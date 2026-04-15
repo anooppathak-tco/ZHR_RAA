@@ -39,3 +39,7 @@
 .approveRadio[aria-checked='true'] .sapMLabel.sapUiSelectable.sapMLabelMaxWidth.sapMRbBLabel {
 	color: green!important;
 }
+
+.sapMUSProgressBox {
+	display: none!important;
+}

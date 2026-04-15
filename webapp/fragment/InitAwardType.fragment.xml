@@ -1,0 +1,36 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	xmlns:l="sap.ui.layout">
+	<Dialog
+		id="initAwardTypeDialog"
+		class="sapUiContentPadding"
+		contentHeight="70%"
+		contentWidth="70%"
+		title="{i18n>type}">
+		<VBox items="{mModel>/AwardSet}">
+			<l:Grid defaultSpan="XL3 L3 M6 S12">
+				<VBox>
+					<RadioButton
+						text="{mModel>AwText}"
+						selected="{= ${mModel>index} === 0}"/>
+				</VBox>
+				
+				<VBox width="200%" >
+					<MessageStrip class="sapUiResponsiveMargin" visible="false"
+					type="Warning" text="{i18n>noCertificate}" showIcon="true">
+					</MessageStrip>
+				</VBox>
+				<VBox >
+					<Text 
+						text="{mModel>LevLongText}" 
+						class="fontBold"/>
+				</VBox>
+			</l:Grid>
+		</VBox>
+		<beginButton>
+			<Button id="idInitAwardTypeBtnSbmt" text="{i18n>submit}" press=".onInitAwardTypeHelpSubmit"/>
+		</beginButton>
+	</Dialog>
+</core:FragmentDefinition>

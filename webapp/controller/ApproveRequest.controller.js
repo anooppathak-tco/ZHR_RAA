@@ -71,7 +71,7 @@ sap.ui.define([
 			this.oBusy.open();
 			this.mSrv.read("/RnaFormSet('" + sIdRna + "')", {
 				urlParameters: {
-					"$expand": "RnaEmployeesSet"	
+					"$expand": "RnaEmployeesSet,RnaEmployeesSet/Attachments"	
 				},
 				success: function(oData) {
 					var	oOldData = JSON.parse(JSON.stringify(oData));
@@ -109,6 +109,14 @@ sap.ui.define([
 			});
 		},
 		
+        handleFilePress: function(oEvt){
+			debugger;
+			var basePath = oEvt.getSource().getModel().sServiceUrl;
+            var oObj = oEvt.getSource().getBindingContext("mMdl").getObject();
+            var sEntityKey = "Id='" + encodeURIComponent(oObj.Id) +  "'";
+            var sPath = window.location.origin + basePath + "/AttachmentSet(" + sEntityKey + ")/$value";
+            sap.m.URLHelper.redirect(sPath,true);
+        },
 		onSubmitDialogPress: function (oObj) {
 			if (!this.oSubmitDialog) {
 				this.oSubmitDialog = new Dialog({

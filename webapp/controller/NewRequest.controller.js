@@ -19,14 +19,26 @@ sap.ui.define([
 		},
 		
 		onInit: function() {
-			this.oRouter = this.getOwnerComponent().getRouter();
-			
+			this.oRouter = this.getOwnerComponent().getRouter();			
+// Get the current year
+			var currentYear = new Date().getFullYear();
+// Create min and max date objects
+			var minDate = new Date(currentYear, 0, 1);    // January is 0
+			var maxDate = new Date(currentYear, 11, 31);
+			var oDateModelAward = new JSONModel({	
+				minDate: minDate,
+				maxDate: maxDate});
+			this.getView().setModel(oDateModelAward, "dateModelAward");
 			var oVisModel = new JSONModel({
 				hasCostCenterData : false,
 				hasDepartmentData : false
 			});
 			this.getView().setModel(oVisModel, "visModel");
-
+			var oFileModel = new sap.ui.model.json.JSONModel({
+					files: [] // Initialize with an empty array
+				});
+			this.getView().setModel(oFileModel, "fileModel");
+			this.uplArray = {};
 			var oModel = new JSONModel();
 			this.oBusy = new BusyDialog();
 			this.oBusy.setBusyIndicatorDelay(0);
@@ -43,6 +55,7 @@ sap.ui.define([
 					inf: [{}]
 				}
 			});
+			
 			var oUrlService = sap.ushell.Container.getService("URLParsing"),
 				oHash = oUrlService.parseShellHash(window.location.hash);
 			if (oHash.action === "create") {
@@ -77,14 +90,16 @@ sap.ui.define([
 							});
 		},
 		inpAmountLiveChange: function(oE) {
-			debugger;
+			var sPath = this.selPath;
+			var oView = this.getView();
+			var sFragmentId = oView.getId() + sPath.replace(/\//g, "_");
 			var oInput = oE.getSource(),
 				nValue = +oE.getParameter("value"),
 				nMinValue = +oInput.data("sMinValue"),
 				nMaxValue = +oInput.data("sMaxValue"),
-				oAwardCurrency = this.byId("inpAmountCurrency"),
+				oAwardCurrency = Fragment.byId(sFragmentId,"inpAmountCurrency"),
 				nConst = +this.getModel("mModel").getProperty("/MciSet/Betrg"),
-				oBtnSubmit = this.byId("idAwardTypeBtnSbmt") || sap.ui.getCore().byId("idAwardTypeBtnSbmt");
+				oBtnSubmit = Fragment.byId(sFragmentId, "idAwardTypeBtnSbmt") || sap.ui.getCore().byId("idAwardTypeBtnSbmt");
 			oAwardCurrency.setText(this.multiplyAndSpaces(nValue, nConst) + " KZT");
 			oInput.setValueState("None");
 			oBtnSubmit.setEnabled(true);
@@ -101,8 +116,9 @@ sap.ui.define([
 		},
 		
 		setAmountValue: function(sAwType, sLevType, sDefValue, sPath, sLevText, sMinValue, sMaxValue, sOpenCert) {
-			var oAwardInp = this.byId("inpAmount"),
-				oAwardCurrency = this.byId("inpAmountCurrency"),
+			var sFragmentId = this.getView().getId() + sPath.replace(/\//g, "_");
+			var oAwardInp = Fragment.byId(sFragmentId,"inpAmount"),
+				oAwardCurrency = Fragment.byId(sFragmentId,"inpAmountCurrency"),
 				nConst = +this.getModel("mModel").getProperty("/MciSet").Betrg.split(".")[0];
 			oAwardInp.setValue(sDefValue);
 			if (!!sDefValue) {
@@ -113,8 +129,8 @@ sap.ui.define([
 			this.getModel("mModel").setProperty(sPath + "/AwType", sAwType);
 			this.getModel("mModel").setProperty(sPath + "/LevType", sLevType);
 			this.getModel("mModel").setProperty(sPath + "/LevText", sLevText);
-			
-			var msgStrip = this.byId("awardTypeDialog").getAggregation("content")[0].getItems()[0].getAggregation("content")[2].getItems()[0];
+			this._awardValueHelpDialogs[sPath].then(function(oValueHelpDialog) {
+			var msgStrip = oValueHelpDialog.getAggregation("content")[0].getItems()[0].getAggregation("content")[2].getItems()[0];
 			if(sAwType === "NC"){
 				debugger;
 				//var levelRes = radioBtnGrp.getSelectedButton().getBindingContext("mModel").getObject();
@@ -131,7 +147,7 @@ sap.ui.define([
 			else{
 				msgStrip.setVisible(false);
 				
-			}
+			}}.bind(this));
 		},
 		
 		amountTextFormatter: function(sTypeAward, sLevText, sLevAmt) {
@@ -155,15 +171,20 @@ sap.ui.define([
 					return sLevText;
 				}
 			}
-		},
-		
-		onAwardSelect: function(oE) {
-			var sPath = this.byId("awardTypeDialog").data("path"),
-				oAward = oE.getSource().getBindingContext("mModel").getObject(),
+		},	
+		onAwardSelect: function(oE) {	
+			var sPath = this.selPath;
+			var oView = this.getView();
+			var sFragmentId = oView.getId() + sPath.replace(/\//g, "_");
+			var	oAward = oE.getSource().getBindingContext("mModel").getObject(),
 				aContent = oE.getSource().getParent().getParent().getAggregation("content"),
-				oAwardInput = this.byId("inpAmount"),
+				oAwardInput = Fragment.byId(sFragmentId, "inpAmount"),
 				bCashAward = this.getModel("mModel").getProperty("/form/typeAward") === "C",
-				aAwardSet = this.getModel("mModel").getProperty("/AwardSet");
+				aAwardSet = this.getModel("mModel").getProperty("/AwardSet"),
+				bShowJust = oAward.ShowJust !== undefined ? oAward.ShowJust : oAward.LevelSet.results[0].ShowJust,
+				bShowAttach = oAward.ShowAttach !== undefined ? oAward.ShowAttach : oAward.LevelSet.results[0].ShowAttach;
+    			this._setJustificationVisibility(sPath, bShowJust);
+				this._setAttachmentVisibility(sPath, bShowAttach);
 			if (!oAwardInput.getEnabled() && bCashAward) {
 				oAwardInput.setEnabled(true);
 			}
@@ -192,26 +213,20 @@ sap.ui.define([
 					this.setAmountValue("", "", "", sPath, "", "", "","");
 				}
 			}
-/*			var msgStrip = this.byId("awardTypeDialog").getAggregation("content")[0].getItems()[0].getAggregation("content")[1].getItems()[0].getItems()[1];
-			var radioBtnGrp = this.byId("awardTypeDialog").getAggregation("content")[0].getItems()[0].getAggregation("content")[1].getItems()[0].getItems()[0];
-			if(bCashAward === false){
-				debugger;
-				var levelRes = radioBtnGrp.getSelectedButton().getBindingContext("mModel").getObject();
-				if(levelRes.Opencert === "000000"){
-				msgStrip.setVisible(true);
-				}
-				else{
-				msgStrip.setVisible(false);
-				}
-			}
-			else{
-				msgStrip.setVisible(false);
-				
-			}*/
 			this.getModel("mModel").refresh();
 			
 		},
-		
+		_setJustificationVisibility: function(sPath, bVisible) {
+			var sFragmentId = this.getView().getId() + sPath.replace(/\//g, "_");
+			Fragment.byId(sFragmentId, "idFormattedText").setVisible(bVisible);
+			Fragment.byId(sFragmentId, "indResaon").setVisible(bVisible);
+		},
+
+		_setAttachmentVisibility: function(sPath, bVisible) {
+			var sFragmentId = this.getView().getId() + sPath.replace(/\//g, "_");
+			Fragment.byId(sFragmentId, "awardDateInp").setVisible(bVisible);
+			Fragment.byId(sFragmentId, "uploadsetBox").setVisible(bVisible);
+		},
 		handleAddInfo: function() {
 			var aInf = this.getModel("mModel").getProperty("/form/inf");
 			aInf.push({});
@@ -220,6 +235,7 @@ sap.ui.define([
 		
 		handleDelInfo: function(oE) {
 			var aInf = this.getModel("mModel").getProperty("/form/inf"),
+				sPernr = oE.getSource().getParent().getItems()[0].getBindingContext("mModel").getObject().Pernr,
 				nPath = +oE.getSource().getParent().getItems()[0].getBindingContext("mModel").getPath().split("/")[3];
 			if (aInf.length > 1) {
 				aInf.splice(nPath, 1);
@@ -230,6 +246,7 @@ sap.ui.define([
 				this.getModel("mModel").refresh();
 			}
 			this.totalAmountRecalculate(aInf);
+			delete this.uplArray[sPernr];
 		},
 		
 		totalAmountRecalculate: function(aInf) {
@@ -241,61 +258,118 @@ sap.ui.define([
 			});	
 			this.getModel("mModel").setProperty("/form/totalAmount", nTotalAmount);
 		},
-		
-		onPressAwardType: function(oE) {
-			var oView = this.getView(),
-				sPath = oE.getSource().getBindingContext("mModel").getPath();
-			if (!this._awardValueHelpDialog) {
-				this._awardValueHelpDialog = Fragment.load({
-					id: oView.getId(),
-					name: "ZHR_RaA.fragment.AwardType",
+		onAwTypeSelected: function(oE) {
+			this._initAwScreen = Fragment.load({
+					id: oView.getId() + "initAward", // Unique ID for the fragment
+					name: "ZHR_RaA.fragment.InitAwardType",
 					controller: this
-				}).then(function (oValueHelpDialog) {
+				}).then(function(oValueHelpDialog) {
 					oView.addDependent(oValueHelpDialog);
 					oValueHelpDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
 					return oValueHelpDialog;
 				}.bind(this));
+		},
+		onPressAwardType: function(oE) {
+			var oView = this.getView(),
+				sPath = oE.getSource().getBindingContext("mModel").getPath(); // Unique path for the employee
+
+			// Initialize a map to store fragments if it doesn't exist
+			if (!this._awardValueHelpDialogs) {
+				this._awardValueHelpDialogs = {};
 			}
-			this._awardValueHelpDialog.then(function(oValueHelpDialog) {
+
+			// Check if a fragment already exists for this employee
+			if (!this._awardValueHelpDialogs[sPath]) {
+				// Create a new fragment for this employee
+				this._awardValueHelpDialogs[sPath] = Fragment.load({
+					id: oView.getId() + sPath.replace(/\//g, "_"), // Unique ID for the fragment
+					name: "ZHR_RaA.fragment.AwardType",
+					controller: this
+				}).then(function(oValueHelpDialog) {
+					oView.addDependent(oValueHelpDialog);
+					oValueHelpDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+					
+				// Store the path in dialog's custom data
+					this.selPath = sPath;
+
+					return oValueHelpDialog;
+				}.bind(this));
+			}
+
+			// Open the fragment for the current employee
+			this._awardValueHelpDialogs[sPath].then(function(oValueHelpDialog) {
 				oValueHelpDialog.open();
-				oValueHelpDialog.data("path", sPath);
+				oValueHelpDialog.data("path", sPath); // Pass the employee's path to the fragment
+				this.selPath = sPath;
 			}.bind(this));
 		},
-		
-		onAwardTypeHelpClose: function() {
+		onAwardTypeHelpClose: function(oEvent) {
+			var sPath = this.selPath;
 			this.getModel("mModel").getProperty("/AwardSet").forEach(function (item) {
 				item.LevLongText = "";
 			});
-			this._awardValueHelpDialog.then(function (oDialog) {
-				oDialog.close();
-				oDialog.destroy();
-				this._awardValueHelpDialog = null;
-			}.bind(this));
-		},
-		
-		onAwardTypeHelpSubmit: function() {
-			this.getModel("mModel").getProperty("/AwardSet").forEach(function (item) {
+			var oDialog = this._awardValueHelpDialogs[sPath]; 
+			oDialog.then(function(oDialogInstance) {
+				oDialogInstance.close();
+			}.bind(this));   			
+},
+		onAwardTypeHelpSubmit: function(oEvent) {
+			var oDialog = oEvent.getSource().getParent();
+    // Retrieve the sPath from the dialog's data
+			var sPath = oDialog.data("path");
+			var awardSetArray = this.getModel("mModel").getProperty("/AwardSet");
+			awardSetArray.forEach(function(item) {
 				item.LevLongText = "";
 			});
-			this._awardValueHelpDialog.then(function (oDialog) {
-				var sPath = oDialog.data("path"),
-					sReason = this.byId("inpIndividualReason").getValue(),
-					sValue = this.byId("inpAmount").getValue(),
-					bCashAward = this.getModel("mModel").getProperty("/form/typeAward") === "C",
-					nConst = bCashAward ? +this.getModel("mModel").getProperty("/MciSet/Betrg") : 1,
-					aInf = this.getModel("mModel").getProperty("/form/inf");
-				this.getModel("mModel").setProperty(sPath + "/LvAmt", sValue);
-				this.getModel("mModel").setProperty(sPath + "/InitComment", sReason);
-				this.getModel("mModel").setProperty(sPath + "/kztAmount", +sValue * nConst);
-				this.totalAmountRecalculate(aInf);
-				oDialog.close();
-				oDialog.destroy();
-				this._awardValueHelpDialog = null;
-			}.bind(this));
-		},
+			var oView = this.getView();
+			var sFragmentId = oView.getId() + sPath.replace(/\//g, "_");
+			// Access the dialog for the current employee using the sPath
+			var oDialog = this._awardValueHelpDialogs[sPath]; 
+
+			if (oDialog) {
+				oDialog.then(function(oDialogInstance) {
+					var sPath = oDialogInstance.data("path"),
+						sReason = Fragment.byId(sFragmentId, "inpIndividualReason").getValue(),
+						sDateValue = Fragment.byId(sFragmentId, "dateInput").getValue(),
+						sDate = sDateValue ? new Date(sDateValue).toISOString().split(".")[0] : null,
+						sValue = Fragment.byId(sFragmentId, "inpAmount").getValue(),
+						bCashAward = this.getModel("mModel").getProperty("/form/typeAward") === "C",
+						nConst = bCashAward ? +this.getModel("mModel").getProperty("/MciSet/Betrg") : 1,
+						aInf = this.getModel("mModel").getProperty("/form/inf");
+
+					// Update the model with the submitted data
+					this.getModel("mModel").setProperty(sPath + "/LvAmt", sValue);
+					this.getModel("mModel").setProperty(sPath + "/InitComment", sReason);
+					this.getModel("mModel").setProperty(sPath + "/AwardDate", sDate);
+					this.getModel("mModel").setProperty(sPath + "/kztAmount", +sValue * nConst);
+					this.totalAmountRecalculate(aInf);
+					
+					if (Fragment.byId(sFragmentId, "uploadsetBox").getVisible()) {
+						if(!sDateValue){
+							MessageBox.error(this.oResourceBundle.getText("dateError"));
+							return;
+						}	
+	// Format to yyyymmdd
+						var ogDate = Fragment.byId(sFragmentId, "dateInput").getDateValue();
+						var year = ogDate.getFullYear();
+						var month = String(ogDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+						var day = String(ogDate.getDate()).padStart(2, '0');
+
+						var formattedDate = `${year}${month}${day}`;
+						console.log("Formatted Date:", formattedDate);
+
+						var pernr = this.getModel("mModel").getProperty(sPath + "/Pernr");
+						this.uplArray[pernr] = [Fragment.byId(sFragmentId, "UploadSet"),formattedDate];
+					}
+					// Close the dialog but do not destroy it
+					oDialogInstance.close();
+				}.bind(this));
+			} else {
+				console.error("Dialog instance not found for the given path.");
+			}
+},
 		
 		onPressEmployee: function(oE) {
-			debugger;
 			var oView = this.getView(),
 				sPath = oE.getSource().getBindingContext("mModel").getPath();
 			if (!this._pValueHelpDialog) {
@@ -493,6 +567,27 @@ sap.ui.define([
 			var aInfSend = aInfCopy.filter(function (item) {
 				return !!item.Pernr;	
 			});
+			aInfSend.forEach((emp, index) => {
+				const empId = emp.Pernr;
+				const empAttachments = [];
+				const uplObject = this.uplArray;
+				// Check if uplObject has data for this employee
+				if (uplObject[empId] && uplObject[empId][0]) {
+					const incompleteItems = uplObject[empId][0].getIncompleteItems();
+
+					incompleteItems.forEach(item => {
+						empAttachments.push({
+							FileName: item.getFileName(),
+							FileType: item.getMediaType(),
+							Pernr: empId,
+							Id: empId + "_" + item.getFileName() // Unique ID for the attachment
+						});
+					});
+				}
+
+				// Assign attachments to the employee object
+				aInfSend[index].Attachments = empAttachments;
+			});
 			var oObj = this.getModel("mModel").getProperty("/form"),
 				sGmPernr = sAwardType === "C" ? this.byId("selectGenManager").getSelectedKey() : this.getModel("mModel").getProperty("/ApproverSet/0/GmPernr"),
 				sGdPernr = this.getModel("mModel").getProperty("/GenDirSet/0/GdPernr"),
@@ -512,6 +607,10 @@ sap.ui.define([
 			this.oBusy.open();
 			this.getOwnerComponent().getModel().create("/RnaFormSet", data, {
 				success: function(oData) {
+					// Retrieve the ID from the response
+            		var sId = oData.IdRna;
+            // Proceed to upload attachments
+            		this._uploadAttachments(sId);
 					this.oBusy.close();
 					MessageToast.show(this.oResourceBundle.getText("success"));
 					var oCrossAppNavigator = sap.ushell.Container.getService("CrossApplicationNavigation");
@@ -539,7 +638,42 @@ sap.ui.define([
 				}.bind(this)
 			});
 		},
-		
+		_uploadAttachments: function(sId) {		
+			debugger;	
+			// Get CSRF token
+			var sCsrfToken = this.getView().getModel().getSecurityToken();
+			
+			Object.entries(this.uplArray).forEach(([key, values]) => {
+			console.log("Key:", key);
+			console.log("Value 1:", values[0]);
+			console.log("Value 2:", values[1]);
+			var aItemsToBeUploaded = values[0].getIncompleteItems();
+			var oUploadSet = values[0];
+
+			if (aItemsToBeUploaded.length > 0) {
+
+				aItemsToBeUploaded.forEach(function(oItem) {
+					oUploadSet.removeAllHeaderFields();
+					// Construct the slug value
+					var slugValue = sId + "|" + key + "|" + values[1] + "|" + oItem.getFileName();
+					slugValue = encodeURIComponent(slugValue);
+
+					// Add custom headers using sap.ui.core.Item
+					oUploadSet.addHeaderField(new sap.ui.core.Item({
+						key: "x-csrf-token",
+						text: sCsrfToken
+					}));
+					oUploadSet.addHeaderField(new sap.ui.core.Item({
+						key: "slug",
+						text: slugValue
+					}));
+
+					// Trigger the upload
+					oUploadSet.uploadItem(oItem);
+				});
+			}
+			});
+		},
 		handleApproverChange: function(oE) {
 			var oSelect = oE.getSource(),
 			    oObj = oSelect.getSelectedItem().getBindingContext("mModel").getObject(),
