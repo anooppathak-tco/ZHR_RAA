@@ -10,17 +10,11 @@
 		contentWidth="70%"
 		title="{i18n>type}">
 		<VBox items="{mModel>/AwardSet}">
-			<l:Grid defaultSpan="XL3 L3 M6 S12">
+			<l:Grid defaultSpan="XL6 L6 M12 S12" hSpacing="2">
 				<VBox>
 					<RadioButton
 						text="{mModel>AwText}"
-						selected="{= ${mModel>index} === 0}"/>
-				</VBox>
-				
-				<VBox width="200%" >
-					<MessageStrip class="sapUiResponsiveMargin" visible="false"
-					type="Warning" text="{i18n>noCertificate}" showIcon="true">
-					</MessageStrip>
+						select=".onInitAwardSelect"/>
 				</VBox>
 				<VBox >
 					<Text 
@@ -30,7 +24,8 @@
 			</l:Grid>
 		</VBox>
 		<beginButton>
-			<Button id="idInitAwardTypeBtnSbmt" text="{i18n>submit}" press=".onInitAwardTypeHelpSubmit"/>
+			<Button id="idInitAwardTypeBtnSbmt" text="{i18n>submit}" 
+			visible="false" press=".onInitAwardTypeHelpSubmit"/>
 		</beginButton>
 	</Dialog>
 </core:FragmentDefinition>

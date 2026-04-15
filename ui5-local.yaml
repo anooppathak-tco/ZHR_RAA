@@ -27,7 +27,7 @@ server:
         ignoreCertError: true
         backend:
           - path: /sap
-            url: https://vhtsvshdap01.hec.tengizchevroil.com:44300
+            url: https://vhtsvskdap01.hec.tengizchevroil.com:44300
             client: "100"
             destination: SHD
     - name: fiori-tools-appreload

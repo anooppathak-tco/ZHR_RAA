@@ -10,6 +10,9 @@
 		items="{mModel>/AwgroupSet}">
 		<core:Item key="{mModel>Awgrp}" text="{mModel>Text}"/>
 	</Select>
+	<core:HTML
+		content="{i18n>nonMonetarySuspensionNote}"
+		class="sapUiTinyMarginTop"/>
 	<buttons>
         <Button id="acceptBtn" text="{i18n>submit}" press="onAwTypeSelected"></Button>
     </buttons>

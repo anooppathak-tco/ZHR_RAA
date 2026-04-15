@@ -9,7 +9,9 @@
 		class="sapUiContentPadding"
 		contentHeight="70%"
 		contentWidth="70%"
-		title="{i18n>type}">
+		title="{i18n>type}"
+		beforeOpen="onBeforeAwardTypeDialogOpen"
+		afterOpen="onAfterAwardTypeDialogOpen">
 		<VBox items="{mModel>/AwardSet}">
 			<l:Grid defaultSpan="XL3 L3 M6 S12">
 				<VBox>

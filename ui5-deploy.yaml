@@ -15,10 +15,10 @@ builder:
       configuration:
         ignoreCertError: true
         target:
-          url: https://vhtsvshdap01.hec.tengizchevroil.com:44300
+          url: https://vhtsvskdap01.hec.tengizchevroil.com:44300
         app:
           name: ZHR_RAA
           package: ZHR_ESS023
-          transport: SHDK922654
+          transport: SKDK900217
         exclude:
           - /test/

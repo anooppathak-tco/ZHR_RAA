@@ -5,8 +5,11 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"sap/m/MessageBox",
 	"sap/m/BusyDialog",
-	"sap/m/MessageToast"
-], function(BaseController, JSONModel, Filter, Fragment, MessageBox, BusyDialog, MessageToast) {
+	"sap/m/MessageToast",
+	"sap/m/Dialog",
+	"sap/m/Button",
+	"sap/ui/core/HTML"
+], function(BaseController, JSONModel, Filter, Fragment, MessageBox, BusyDialog, MessageToast, Dialog, Button, HTML) {
 	"use strict";
 	
 	return BaseController.extend("ZHR_RaA.controller.NewRequest", {
@@ -16,8 +19,7 @@ sap.ui.define([
 			sFormattedValue = sFormattedValue.replace(/(?!^)(?=(?:\d{3})+(?:\.|$))/gm, ' ');
 			sFormattedValue = sFormattedValue + " KZT";
 			return sFormattedValue;	
-		},
-		
+		},		
 		onInit: function() {
 			this.oRouter = this.getOwnerComponent().getRouter();			
 // Get the current year
@@ -55,7 +57,6 @@ sap.ui.define([
 					inf: [{}]
 				}
 			});
-			
 			var oUrlService = sap.ushell.Container.getService("URLParsing"),
 				oHash = oUrlService.parseShellHash(window.location.hash);
 			if (oHash.action === "create") {
@@ -113,8 +114,7 @@ sap.ui.define([
 				oInput.setValueStateText(this.oResourceBundle.getText("high"));
 				oBtnSubmit.setEnabled(false);
 			}
-		},
-		
+		},		
 		setAmountValue: function(sAwType, sLevType, sDefValue, sPath, sLevText, sMinValue, sMaxValue, sOpenCert) {
 			var sFragmentId = this.getView().getId() + sPath.replace(/\//g, "_");
 			var oAwardInp = Fragment.byId(sFragmentId,"inpAmount"),
@@ -148,8 +148,7 @@ sap.ui.define([
 				msgStrip.setVisible(false);
 				
 			}}.bind(this));
-		},
-		
+		},		
 		amountTextFormatter: function(sTypeAward, sLevText, sLevAmt) {
 			if (!!sTypeAward && !!sLevText && !!sLevAmt) {
 				switch (sTypeAward) {
@@ -162,7 +161,6 @@ sap.ui.define([
 				}
 			}
 		},
-
 		awardTypeTextFormatter: function(sAwardType, sLevText, sMinValue, sMaxValue) {
 			if (!!sAwardType && !!sLevText && !!sMinValue && !!sMaxValue) {
 				if (sAwardType === "C") {
@@ -221,7 +219,6 @@ sap.ui.define([
 			Fragment.byId(sFragmentId, "idFormattedText").setVisible(bVisible);
 			Fragment.byId(sFragmentId, "indResaon").setVisible(bVisible);
 		},
-
 		_setAttachmentVisibility: function(sPath, bVisible) {
 			var sFragmentId = this.getView().getId() + sPath.replace(/\//g, "_");
 			Fragment.byId(sFragmentId, "awardDateInp").setVisible(bVisible);
@@ -231,8 +228,7 @@ sap.ui.define([
 			var aInf = this.getModel("mModel").getProperty("/form/inf");
 			aInf.push({});
 			this.getModel("mModel").refresh();
-		},
-		
+		},		
 		handleDelInfo: function(oE) {
 			var aInf = this.getModel("mModel").getProperty("/form/inf"),
 				sPernr = oE.getSource().getParent().getItems()[0].getBindingContext("mModel").getObject().Pernr,
@@ -247,8 +243,7 @@ sap.ui.define([
 			}
 			this.totalAmountRecalculate(aInf);
 			delete this.uplArray[sPernr];
-		},
-		
+		},		
 		totalAmountRecalculate: function(aInf) {
 			var nTotalAmount = 0;
 			aInf.forEach(function(item) {
@@ -258,7 +253,30 @@ sap.ui.define([
 			});	
 			this.getModel("mModel").setProperty("/form/totalAmount", nTotalAmount);
 		},
+		onInitAwardSelect: function(oE) {
+			let mModel = this.getModel("mModel");
+			let diagId = this.getView().getId() + "initAward";
+			this.initSelObjPath = oE.getSource().getBindingContext("mModel").getPath();
+			this.initSelObj = oE.getSource().getBindingContext("mModel").getObject();
+			mModel.getProperty("/AwardSet").forEach(function (item) {
+				item.LevLongText = "";
+			});
+			mModel.setProperty(this.initSelObjPath+"/LevLongText",this.initSelObj.LevelSet.results[0].LevLongText);
+			Fragment.byId(diagId, "idInitAwardTypeBtnSbmt").setVisible(true);
+		},
+		onInitAwardTypeHelpSubmit: function(oE) {
+			debugger;
+			this._initAwScreen.then(function(oValueHelpDialog) {
+				oValueHelpDialog.close();
+			}.bind(this));
+			debugger
+		},
 		onAwTypeSelected: function(oE) {
+			debugger;
+			if (sap.ui.getCore().byId("awardTypeId").getSelectedKey() !== "C") {
+				return;
+			};
+			var oView = this.getView();
 			this._initAwScreen = Fragment.load({
 					id: oView.getId() + "initAward", // Unique ID for the fragment
 					name: "ZHR_RaA.fragment.InitAwardType",
@@ -268,6 +286,12 @@ sap.ui.define([
 					oValueHelpDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
 					return oValueHelpDialog;
 				}.bind(this));
+			this._initAwScreen.then(function(oValueHelpDialog) {
+				oValueHelpDialog.setEscapeHandler(function(oPromise) {
+					oPromise.reject();
+				});
+				oValueHelpDialog.open();
+			}.bind(this));	
 		},
 		onPressAwardType: function(oE) {
 			var oView = this.getView(),
@@ -304,15 +328,66 @@ sap.ui.define([
 			}.bind(this));
 		},
 		onAwardTypeHelpClose: function(oEvent) {
-			var sPath = this.selPath;
-			this.getModel("mModel").getProperty("/AwardSet").forEach(function (item) {
-				item.LevLongText = "";
-			});
-			var oDialog = this._awardValueHelpDialogs[sPath]; 
-			oDialog.then(function(oDialogInstance) {
-				oDialogInstance.close();
-			}.bind(this));   			
-},
+					var sPath = this.selPath;
+					this.getModel("mModel").getProperty("/AwardSet").forEach(function (item) {
+						item.LevLongText = "";
+					});
+					var oDialog = this._awardValueHelpDialogs[sPath]; 
+					oDialog.then(function(oDialogInstance) {
+						oDialogInstance.close();
+					}.bind(this));   			
+		},
+		onAfterAwardTypeDialogOpen: function(oEvent) {	
+						if (!this.initSelObjPath) {
+							return;
+						}
+						var oDialog = oEvent.getSource();
+						var aRbContent = oDialog.getContent()[0];
+						aRbContent.getItems().forEach(function(item, index){
+							let aRBMain = item.getContent()[0].getItems()[0];
+							aRBMain.setSelected(false);
+							aRBMain.setEnabled(false);
+						})
+						
+						debugger
+						var initSelPath = this.initSelObjPath.at(-1);
+						var sPath = this.selPath;
+						var aSelRBContent = aRbContent.getItems()[initSelPath];
+						var oSelRBMain = aSelRBContent.getContent()[0].getItems()[0];
+						oSelRBMain.setSelected(true);
+						var oView = this.getView();
+					var sFragmentId = oView.getId() + sPath.replace(/\//g, "_");
+					var	oAward = this.initSelObj,
+						aContent = oDialog.getContent(),
+						oAwardInput = Fragment.byId(sFragmentId, "inpAmount"),
+						bCashAward = this.getModel("mModel").getProperty("/form/typeAward") === "C",
+						aAwardSet = this.getModel("mModel").getProperty("/AwardSet"),
+						bShowJust = oAward.ShowJust !== undefined ? oAward.ShowJust : oAward.LevelSet.results[0].ShowJust,
+						bShowAttach = oAward.ShowAttach !== undefined ? oAward.ShowAttach : oAward.LevelSet.results[0].ShowAttach;
+						this._setJustificationVisibility(sPath, bShowJust);
+						this._setAttachmentVisibility(sPath, bShowAttach);
+					if (!oAwardInput.getEnabled() && bCashAward) {
+						oAwardInput.setEnabled(true);
+					}
+					
+						if (oAward.LevelSet) {
+							oAward.LevLongText = oAward.LevelSet.results[0].LevLongText;
+							var oRadioButtonGroup = aSelRBContent.getContent()[1].getItems()[0];
+							oRadioButtonGroup.setEnabled(true);
+							this.setAmountValue(oAward.LevelSet.results[0].AwType, oAward.LevelSet.results[0].LevType, oAward.LevelSet.results[0].DefValue, 
+								sPath, oAward.LevelSet.results[0].LevText, oAward.LevelSet.results[0].MinValue, oAward.LevelSet.results[0].MaxValue,oAward.LevelSet.results[0].Opencert);
+						} else {
+							aAwardSet.forEach(function (item) {
+								if (item.AwType === oAward.AwType) {
+									item.LevLongText = oAward.LevLongText;
+								}
+							});
+							this.setAmountValue(oAward.AwType, oAward.LevType, oAward.DefValue, 
+								sPath, oAward.LevText, oAward.MinValue, oAward.MaxValue,oAward.Opencert);
+						}
+					
+					this.getModel("mModel").refresh();
+		},
 		onAwardTypeHelpSubmit: function(oEvent) {
 			var oDialog = oEvent.getSource().getParent();
     // Retrieve the sPath from the dialog's data
@@ -602,42 +677,125 @@ sap.ui.define([
 					InitComment: oObj.InitComment,
 					InitKostl: oObj.IdCostCenter,
 					InitOrgeh: oObj.IdDepartment,
-					RnaEmployeesSet: aInfSend
+					RnaEmployeesSet: aInfSend,
+					UserAction: 'C'
 				};
+			// Store data for later use in triggerActualCreate
+			this._submissionData = data;
+			this.oBusy.open();
+			// First call: validation with isCreate = false
+			this._validateBeforeCreate(data);
+		},
+
+		/**
+		 * Validates the form data before showing COI dialog
+		 * Sends a create request to backend with isCreate flag set to false
+		 * @param {Object} data - The submission data to validate
+		 */
+		_validateBeforeCreate: function(data) {
+			var that = this;
+			this.getOwnerComponent().getModel().create("/RnaFormSet", data, {
+				success: function(oData) {
+					that.oBusy.close();
+					// Validation successful, now show COI dialog
+					that.showCOIDialog();
+				},
+				error: function(error) {
+					that.oBusy.close();
+					var sMessage = "";
+					if (error.responseText) {
+						var oError = JSON.parse(error.responseText);
+					}
+					if (oError && oError.error && oError.error.message && oError.error.message.value) {	
+						sMessage = oError.error.message.value;
+					}
+					if (oError && oError.error && oError.error.innererror && oError.error.innererror.errordetails && oError.error.innererror.errordetails.length) {
+						sMessage = "";
+						oError.error.innererror.errordetails.forEach(function(item) {
+							sMessage = sMessage + item.message + "\n" + "\n";
+						});
+					}
+					MessageBox.error(sMessage);
+				}
+			});
+		},
+
+		/**
+		 * Shows COI (Conflict of Interest) Dialog to inform user about policies
+		 * Dialog has only one button 'Confirm' which triggers actual create
+		 */
+		showCOIDialog: function() {
+			var that = this;
+			var oDialog = new Dialog({
+				title: this.oResourceBundle.getText("COIDialogTitle") || "Conflict of Interest Policy",
+				type: "Message",
+				state: "Warning",
+				content: [
+					new HTML({
+						content: this.oResourceBundle.getText("COIDialogMessage") || "Please review our Conflict of Interest policies before proceeding."
+					})
+				],
+				beginButton: new Button({
+					text: this.oResourceBundle.getText("Confirm") || "Confirm",
+					press: function() {
+						oDialog.close();
+						oDialog.destroy();
+						// User confirmed, now trigger actual create with isCreate = true
+						that.triggerActualCreate();
+					}
+				}),
+				afterClose: function(oEvent) {
+					// Cleanup
+					oDialog.destroy();
+				}
+			});
+			oDialog.open();
+		},
+
+		/**
+		 * Triggers the actual create call to backend with isCreate flag set to true
+		 * This is called after user confirms the COI dialog
+		 */
+		triggerActualCreate: function() {
+			var that = this;
+			// Update the flag to true for actual creation
+			var data = this._submissionData;
+			data.UserAction = 'P';
+			
 			this.oBusy.open();
 			this.getOwnerComponent().getModel().create("/RnaFormSet", data, {
 				success: function(oData) {
 					// Retrieve the ID from the response
-            		var sId = oData.IdRna;
-            // Proceed to upload attachments
-            		this._uploadAttachments(sId);
-					this.oBusy.close();
-					MessageToast.show(this.oResourceBundle.getText("success"));
+					var sId = oData.IdRna;
+					// Proceed to upload attachments
+					that._uploadAttachments(sId);
+					that.oBusy.close();
+					MessageToast.show(that.oResourceBundle.getText("success"));
 					var oCrossAppNavigator = sap.ushell.Container.getService("CrossApplicationNavigation");
 					oCrossAppNavigator.toExternal({
 						target: {shellHash: "#Shell-home"}
 					});
-				}.bind(this),
+				},
 				error: function(error) {
-					this.oBusy.close();
+					that.oBusy.close();
 					var sMessage = "";
 					if (error.responseText) {
-	                    var oError = JSON.parse(error.responseText);
-	                }
-	                if (oError && oError.error && oError.error.message && oError.error.message.value) {	
+						var oError = JSON.parse(error.responseText);
+					}
+					if (oError && oError.error && oError.error.message && oError.error.message.value) {	
 						sMessage = oError.error.message.value;
-	                }
-	                if (oError && oError.error && oError.error.innererror && oError.error.innererror.errordetails && oError.error.innererror.errordetails.length) {
-	                	sMessage = "";
-	                	oError.error.innererror.errordetails.forEach(function(item) {
-	                		sMessage = sMessage + item.message + "\n" + "\n";
-	                	});
-	                }
-	                //sMessage = sMessage + "\n" + "\n" + this.oResourceBundle.getText("support");
-	                MessageBox.error(sMessage);
-				}.bind(this)
+					}
+					if (oError && oError.error && oError.error.innererror && oError.error.innererror.errordetails && oError.error.innererror.errordetails.length) {
+						sMessage = "";
+						oError.error.innererror.errordetails.forEach(function(item) {
+							sMessage = sMessage + item.message + "\n" + "\n";
+						});
+					}
+					MessageBox.error(sMessage);
+				}
 			});
 		},
+
 		_uploadAttachments: function(sId) {		
 			debugger;	
 			// Get CSRF token

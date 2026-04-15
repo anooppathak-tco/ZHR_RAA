@@ -67,7 +67,6 @@ sap.ui.define([
 				success: function(oData) {
 					this.oBusy.close();
 					oData.results.forEach(function(award) {
-						award.LevLongText = ""; 
 						award.LevelSet.results.forEach(function(level) {
 							level.DefValue = level.DefValue.split(".")[0];
 							level.MaxValue = level.MaxValue.split(".")[0];
